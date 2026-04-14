@@ -623,10 +623,16 @@ function showMuseuTooltip(ev, d) {
 }
 
 function moveTooltip(ev) {
+  const M = 8; // marge mínim de la vora de pantalla
   const W = window.innerWidth, H = window.innerHeight;
+  // Posició inicial fora de pantalla per forçar layout i mesurar mida real
+  tip.style.left = '0px'; tip.style.top = '0px';
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
   let x = ev.clientX + 14, y = ev.clientY + 14;
-  if (x + 250 > W) x = ev.clientX - 254;
-  if (y + 90  > H) y = ev.clientY - 94;
+  if (x + tw + M > W) x = ev.clientX - tw - 14;
+  if (x < M) x = M;
+  if (y + th + M > H) y = ev.clientY - th - 14;
+  if (y < M) y = M;
   tip.style.left = x + 'px';
   tip.style.top  = y + 'px';
 }
@@ -783,9 +789,20 @@ posMobileBtn('ann-btn-cac',       cCAC[0]+22,      cCAC[1]);
   function showBtnTooltip(e) {
     tip.innerHTML = txt;
     tip.style.display = 'block';
+    const M = 8;
+    const W = window.innerWidth, H = window.innerHeight;
     const r = btn.getBoundingClientRect();
-    let x = r.right + 8, y = r.top;
-    if (x + 240 > window.innerWidth) x = r.left - 248;
+    // Mesurar mida real del tooltip
+    tip.style.left = '0px'; tip.style.top = '0px';
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    // Preferim a la dreta del botó; si no hi cap, a l'esquerra
+    let x = r.right + 8;
+    if (x + tw + M > W) x = r.left - tw - 8;
+    if (x < M) x = M;
+    // Vertical: alineat al top del botó, clamped a la pantalla
+    let y = r.top;
+    if (y + th + M > H) y = H - th - M;
+    if (y < M) y = M;
     tip.style.left = x + 'px';
     tip.style.top  = y + 'px';
     e.stopPropagation();
